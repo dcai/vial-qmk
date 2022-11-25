@@ -1,0 +1,43 @@
+env:
+    FIRMWARE_DIR: firmware
+
+name: sofle
+
+on:
+    push:
+        branches:
+            - master
+            - dcai
+        paths:
+            - "keyboards/sofle/**"
+            - ".github/workflows/build-sofle.yml"
+    workflow_dispatch:
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        container: qmkfm/qmk_cli
+
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  fetch-depth: 1
+                  persist-credentials: false
+
+            - name: qmk setup
+              run: |
+                  git config --global safe.directory "*"
+                  qmk setup -y
+
+            - name: build firmware
+              run: |
+                  qmk compile -kb sofle -km vial
+                  mkdir ${{ env.FIRMWARE_DIR }}
+                  find .build/ -regex '.*\.\(hex\|uf2\)$' -exec cp {} ./${{ env.FIRMWARE_DIR }} \;
+                  ls -l ./${{ env.FIRMWARE_DIR }}
+
+            - name: publish firmware
+              uses: actions/upload-artifact@v3
+              with:
+                  name: sofle-${{ github.run_number }}
+                  path: ${{ env.FIRMWARE_DIR }}
