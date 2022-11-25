@@ -1,0 +1,44 @@
+env:
+    FIRMWARE_DIR: firmware
+
+name: crkbd
+
+on:
+    push:
+        branches:
+            - master
+            - dcai
+            - rp2040
+        paths:
+            - "keyboards/crkbd/**"
+            - ".github/workflows/build-crkbd-rp2040.yml"
+    workflow_dispatch:
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        container: qmkfm/qmk_cli
+
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  fetch-depth: 1
+                  persist-credentials: false
+
+            - name: qmk setup
+              run: |
+                  git config --global safe.directory "*"
+                  qmk setup -y
+
+            - name: build fimrware
+              run: |
+                  qmk compile -kb crkbd -km vial -e CONVERT_TO=promicro_rp2040
+                  mkdir ${{ env.FIRMWARE_DIR }}
+                  find .build/ -regex '.*\.\(hex\|uf2\)$' -exec cp {} ./${{ env.FIRMWARE_DIR }} \;
+                  ls -l ./${{ env.FIRMWARE_DIR }}
+
+            - name: publish firmware
+              uses: actions/upload-artifact@v3
+              with:
+                  name: crkbd
+                  path: ${{ env.FIRMWARE_DIR }}
