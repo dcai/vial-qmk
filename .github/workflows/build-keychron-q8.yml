@@ -1,0 +1,43 @@
+env:
+    FIRMWARE_DIR: keychron-q8-firmware
+
+name: keychron q8
+
+on:
+    push:
+        branches:
+            - master
+            - dcai
+        paths:
+            - "keyboards/keychron/q8/**"
+            - ".github/workflows/build-keychron-q8.yml"
+    workflow_dispatch:
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        container: qmkfm/qmk_cli
+
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  fetch-depth: 1
+                  persist-credentials: false
+
+            - name: qmk setup
+              run: |
+                  git config --global safe.directory "*"
+                  qmk setup -y
+
+            - name: build fimrware
+              run: |
+                  qmk compile -kb keychron/q8/ansi_encoder -km vial
+                  mkdir ${{ env.FIRMWARE_DIR }}
+                  find .build/ -regex '.*\.\(hex\|uf2\)$' -exec cp {} ./${{ env.FIRMWARE_DIR }} \;
+                  ls -l ./${{ env.FIRMWARE_DIR }}
+
+            - name: publish firmware
+              uses: actions/upload-artifact@v3
+              with:
+                  name: keychron-q8
+                  path: ${{ env.FIRMWARE_DIR }}
