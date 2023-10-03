@@ -1,0 +1,43 @@
+env:
+    FIRMWARE_DIR: firmware
+
+name: reviung5
+
+on:
+    push:
+        branches:
+            - master
+            - dcai
+        paths:
+            - "**reviung5**"
+    workflow_dispatch:
+
+jobs:
+    build-vial:
+        runs-on: ubuntu-latest
+        container: qmkfm/qmk_cli
+
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  fetch-depth: 1
+                  persist-credentials: false
+
+            - name: qmk setup
+              run: |
+                  git config --global safe.directory "*"
+                  qmk setup -y
+
+            - name: build fimrware
+              run: |
+                  # qmk compile -kb reviung/reviung5 -km vial -e CONVERT_TO=promicro_rp2040
+                  qmk compile -kb reviung/reviung5 -km dcai
+                  mkdir ${{ env.FIRMWARE_DIR }}
+                  find .build/ -regex '.*\.\(hex\|uf2\)$' -exec cp {} ./${{ env.FIRMWARE_DIR }} \;
+                  ls -l ./${{ env.FIRMWARE_DIR }}
+
+            - name: publish firmware
+              uses: actions/upload-artifact@v3
+              with:
+                  name: vial_reviung5-${{ github.run_number }}
+                  path: ${{ env.FIRMWARE_DIR }}
