@@ -33,7 +33,7 @@ jobs:
               run: |
                   qmk compile -kb keychron/q8/ansi_encoder -km vial
                   mkdir ${{ env.FIRMWARE_DIR }}
-                  find .build/ -regex '.*\.\(hex\|uf2\)$' -exec cp {} ./${{ env.FIRMWARE_DIR }} \;
+                  find .build/ -regex '.*\.\(hex\|uf2\|bin\)$' -exec cp {} ./${{ env.FIRMWARE_DIR }} \;
                   ls -l ./${{ env.FIRMWARE_DIR }}
 
             - name: publish firmware
