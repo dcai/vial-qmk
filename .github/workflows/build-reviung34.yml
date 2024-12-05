@@ -31,7 +31,7 @@ jobs:
 
             - name: build fimrware
               run: |
-                  qmk compile -kb reviung/reviung34 -km dcai -e CONVERT_TO=promicro_rp2040
+                  qmk compile -kb reviung/reviung34 -km vial -e CONVERT_TO=promicro_rp2040
                   mkdir ${{ env.FIRMWARE_DIR }}
                   find .build/ -regex '.*\.\(hex\|uf2\)$' -exec cp {} ./${{ env.FIRMWARE_DIR }} \;
                   ls -l ./${{ env.FIRMWARE_DIR }}
