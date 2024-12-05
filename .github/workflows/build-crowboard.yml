@@ -27,11 +27,11 @@ jobs:
             - name: qmk setup
               run: |
                   git config --global safe.directory "*"
+                  python3 -m pip install -r ./requirements.txt
                   qmk setup -y
 
             - name: build fimrware
               run: |
-                  python3 -m pip install -r ./requirements.txt
                   qmk compile -kb crowboard -km default
                   mkdir ${{ env.FIRMWARE_DIR }}
                   find .build/ -regex '.*\.\(hex\|uf2\)$' -exec cp {} ./${{ env.FIRMWARE_DIR }} \;
