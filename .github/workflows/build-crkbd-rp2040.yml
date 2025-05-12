@@ -39,7 +39,7 @@ jobs:
                   ls -l ./${{ env.FIRMWARE_DIR }}
 
             - name: publish firmware
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                   name: crkbd
                   path: ${{ env.FIRMWARE_DIR }}

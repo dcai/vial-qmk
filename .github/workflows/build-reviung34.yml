@@ -37,7 +37,7 @@ jobs:
                   ls -l ./${{ env.FIRMWARE_DIR }}
 
             - name: publish firmware
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                   name: vial_reviung34-${{ github.run_number }}
                   path: ${{ env.FIRMWARE_DIR }}
